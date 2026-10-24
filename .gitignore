@@ -1,0 +1,7 @@
+*.bin
+*.BIN
+*.7z
+*.cue
+*.gdi
+*.dis
+__pycache__/

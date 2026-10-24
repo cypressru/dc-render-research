@@ -1,0 +1,399 @@
+; Test Drive Le Mans (Dreamcast, 2000) LEMANS24.BIN, load base 0x8C010000.
+; Disassembled with sh-elf-objdump -EL; short excerpts for analysis and
+; commentary. See ../README.md for context.
+
+
+; ==== PNT_c no-clip (0x8c061e00): 16-byte vertex, positions as truncated 16-bit floats ====
+; each coordinate is the high half of an IEEE float: mov.w + swap.w puts it in the top 16 bits,
+; then a store/load through the stack moves it to an FP register (no int->float conversion)
+8c061e00:  mov.l @r4+,r1
+8c061e02:  mov.l @r4+,r2
+8c061e04:  mov.l @r4+,r6
+8c061e06:  mov r2,r3
+8c061e08:  pref @r2
+8c061e0a:  add #32,r3
+8c061e0c:  fmov fr12,@-r15
+8c061e0e:  mov.l r8,@-r15
+8c061e10:  mov.l r9,@-r15
+8c061e12:  mov.l r10,@-r15
+8c061e14:  mov.l r11,@-r15
+8c061e16:  mov.l r12,@-r15
+8c061e18:  mov.l r13,@-r15
+8c061e1a:  mov.l 0x8c061eb4,r10 ! 47800000
+8c061e1c:  mova 0x8c061eb8,r0
+8c061e1e:  mov r0,r13
+8c061e20:  mov.l r14,@-r15
+8c061e22:  add #-4,r15
+8c061e24:  fmov @r4+,fr1
+8c061e26:  add #-32,r6
+8c061e28:  fmov @r4+,fr2
+8c061e2a:  fmov @r4+,fr3
+8c061e2c:  fmov @r4+,fr0
+8c061e2e:  mov.l 0x8c061eac,r4 ! e0000000
+8c061e30:  mov.l 0x8c061eb0,r5 ! f0000000
+8c061e32:  mov.b @r1+,r0
+8c061e34:  cmp/eq #0,r0
+8c061e36:  extu.b r0,r0
+8c061e38:  bt.s 0x8c061ebc
+8c061e3a:  add #2,r0
+8c061e3c:  mov.w @r2,r14
+8c061e3e:  fmov @r2+,fr5
+8c061e40:  swap.w r14,r14
+8c061e42:  mov.l r14,@r15
+8c061e44:  fmov @r15,fr4
+8c061e46:  mov.w @r2,r14
+8c061e48:  fmov @r2+,fr9
+8c061e4a:  swap.w r14,r14
+8c061e4c:  mov.l r14,@r15
+8c061e4e:  fmov @r15,fr6
+8c061e50:  add #16,r3
+8c061e52:  mov.w @r2,r14
+8c061e54:  fmov @r2+,fr11
+8c061e56:  swap.w r14,r14
+8c061e58:  mov.l r14,@r15
+8c061e5a:  fmov @r15,fr10
+8c061e5c:  fldi1 fr12
+8c061e5e:  fldi1 fr7
+8c061e60:  ftrv xmtrx,fv4
+8c061e62:  fldi1 fr8
+8c061e64:  cmp/eq #1,r0
+8c061e66:  bf.s 0x8c061e6c
+8c061e68:  mov r4,r7
+8c061e6a:  mov r5,r7
+8c061e6c:  mov.l @r2+,r8
+8c061e6e:  add #64,r6
+8c061e70:  fdiv fr4,fr12
+8c061e72:  pref @r3
+8c061e74:  fipr fv0,fv8
+8c061e76:  fmov @r13,fr10
+8c061e78:  fcmp/gt fr10,fr11
+8c061e7a:  bf.s 0x8c061e8c
+8c061e7c:  fldi0 fr10
+8c061e7e:  flds fr11,fpul
+8c061e80:  sts fpul,r11
+8c061e82:  mov #4,r12
+8c061e84:  shad r12,r11
+8c061e86:  add r10,r11
+8c061e88:  lds r11,fpul
+8c061e8a:  fsts fpul,fr10
+8c061e8c:  fmov fr10,@-r6
+8c061e8e:  fmov fr11,@-r6
+8c061e90:  mov.l r8,@-r6
+8c061e92:  swap.w r8,r8
+8c061e94:  fmul fr12,fr6
+8c061e96:  mov.l r8,@-r6
+8c061e98:  fmul fr12,fr7
+8c061e9a:  fmov fr12,@-r6
+8c061e9c:  fmov fr6,@-r6
+8c061e9e:  fmov fr7,@-r6
+8c061ea0:  mov.l r7,@-r6
+8c061ea2:  dt r0
+8c061ea4:  bf.s 0x8c061e3c
+8c061ea6:  pref @r6
+8c061ea8:  bra 0x8c061e32
+8c061eaa:  nop
+8c061eac:  .word 0x0000
+8c061eae:  mov #0,r0
+8c061eb0:  .word 0x0000
+8c061eb2:  fadd fr0,fr0
+8c061eb4:  .word 0x0000
+8c061eb6:  .word 0x4780
+8c061eb8:  .word 0x0000
+8c061eba:  cmp/eq r0,r15
+8c061ebc:  add #4,r15
+8c061ebe:  mov.l @r15+,r14
+8c061ec0:  mov.l @r15+,r13
+8c061ec2:  mov.l @r15+,r12
+8c061ec4:  mov.l @r15+,r11
+8c061ec6:  mov.l @r15+,r10
+8c061ec8:  mov.l @r15+,r9
+8c061eca:  mov.l @r15+,r8
+8c061ecc:  fmov @r15+,fr12
+8c061ece:  mov r6,r0
+8c061ed0:  rts
+8c061ed2:  add #32,r0
+
+; ==== Outline no-clip twin (0x8c0ce740), vlxKamuiOutlineEffect: P += width*N before FTRV ====
+8c0ce740:  mov.l @r4+,r1
+8c0ce742:  mov.l @r4+,r2
+8c0ce744:  mov.l @r4+,r6
+8c0ce746:  mov r2,r3
+8c0ce748:  pref @r2
+8c0ce74a:  add #32,r3
+8c0ce74c:  fmov fr0,@-r15
+8c0ce74e:  fmov fr12,@-r15
+8c0ce750:  mov.l r8,@-r15
+8c0ce752:  mov.l r9,@-r15
+8c0ce754:  mov.l r10,@-r15
+8c0ce756:  mov.l r11,@-r15
+8c0ce758:  mov.l r12,@-r15
+8c0ce75a:  mov.l r13,@-r15
+8c0ce75c:  mov.l 0x8c0ce7d0,r10 ! 47800000
+8c0ce75e:  mova 0x8c0ce7d4,r0
+8c0ce760:  mov r0,r13
+8c0ce762:  fmov @r4+,fr1
+8c0ce764:  add #-32,r6
+8c0ce766:  fmov @r4+,fr2
+8c0ce768:  fmov @r4+,fr3
+8c0ce76a:  fmov @r4+,fr0
+8c0ce76c:  mov.l 0x8c0ce7c8,r4 ! e0000000
+8c0ce76e:  mov.l 0x8c0ce7cc,r5 ! f0000000
+8c0ce770:  fschg
+8c0ce772:  mov.b @r1+,r0
+8c0ce774:  cmp/eq #0,r0
+8c0ce776:  extu.b r0,r0
+8c0ce778:  bt.s 0x8c0ce7d8
+8c0ce77a:  add #2,r0
+8c0ce77c:  fmov @r2+,fr4
+8c0ce77e:  add #24,r3
+8c0ce780:  fmov @r2,fr6
+8c0ce782:  fldi1 fr12
+8c0ce784:  fmov @r2+,fr8
+8c0ce786:  fldi1 fr7
+8c0ce788:  fmov @r2+,fr10
+8c0ce78a:  fmac fr0,fr9,fr4
+8c0ce78c:  fmac fr0,fr10,fr5
+8c0ce78e:  fmac fr0,fr11,fr6
+8c0ce790:  ftrv xmtrx,fv4
+8c0ce792:  fldi1 fr8
+8c0ce794:  cmp/eq #1,r0
+8c0ce796:  bf.s 0x8c0ce79c
+8c0ce798:  mov r4,r7
+8c0ce79a:  mov r5,r7
+8c0ce79c:  add #64,r6
+8c0ce79e:  fdiv fr4,fr12
+8c0ce7a0:  pref @r3
+8c0ce7a2:  fschg
+8c0ce7a4:  fldi1 fr10
+8c0ce7a6:  fldi1 fr11
+8c0ce7a8:  fmov fr10,@-r6
+8c0ce7aa:  fmov fr11,@-r6
+8c0ce7ac:  fmul fr12,fr7
+8c0ce7ae:  add #-8,r6
+8c0ce7b0:  fmul fr12,fr6
+8c0ce7b2:  fmov fr12,@-r6
+8c0ce7b4:  fmov fr6,@-r6
+8c0ce7b6:  fmov fr7,@-r6
+8c0ce7b8:  fschg
+8c0ce7ba:  mov.l r7,@-r6
+8c0ce7bc:  dt r0
+8c0ce7be:  bf.s 0x8c0ce77c
+8c0ce7c0:  pref @r6
+8c0ce7c2:  bra 0x8c0ce772
+8c0ce7c4:  nop
+8c0ce7c6:  .word 0x0000
+8c0ce7c8:  .word 0x0000
+8c0ce7ca:  mov #0,r0
+8c0ce7cc:  .word 0x0000
+8c0ce7ce:  fadd fr0,fr0
+8c0ce7d0:  .word 0x0000
+8c0ce7d2:  .word 0x4780
+8c0ce7d4:  .word 0x0000
+8c0ce7d6:  cmp/eq r0,r15
+8c0ce7d8:  fschg
+8c0ce7da:  mov.l @r15+,r13
+8c0ce7dc:  mov.l @r15+,r12
+8c0ce7de:  mov.l @r15+,r11
+8c0ce7e0:  mov.l @r15+,r10
+8c0ce7e2:  mov.l @r15+,r9
+8c0ce7e4:  mov.l @r15+,r8
+8c0ce7e6:  fmov @r15+,fr12
+8c0ce7e8:  fmov @r15+,fr0
+8c0ce7ea:  mov r6,r0
+8c0ce7ec:  rts
+8c0ce7ee:  add #32,r0
+
+; ==== Clip-template strip end (0x8c0b137e): the PCW is rewritten in place in the deferred SQ ====
+; flushes are one vertex behind, so the end-of-strip PCW (r11 = 0xF0000000) can overwrite the
+; already written word before the burst goes out
+8c0b1370:  nop
+8c0b1372:  mov r6,r1
+8c0b1374:  mov r7,r6
+8c0b1376:  mov r8,r7
+8c0b1378:  mov r1,r8
+8c0b137a:  bra 0x8c0b10a6
+8c0b137c:  nop
+8c0b137e:  mov.l r11,@r9
+8c0b1380:  pref @r9
+8c0b1382:  bra 0x8c0b0c34
+8c0b1384:  nop
+
+; ==== Env-map lighting pre-pass (0x8c164960), car paint: RAM -> RAM, ~135 instructions per vertex ====
+; V = P - eye, R = V - 2(N.V)N with fmac, normalised (fipr + fsrra), Fresnel-like (1-|N.V|)^2,
+; (R.L)^4 and (R.L)^16 by squaring, XMTRX reused as a 4x4 colour-mixing matrix, branch-free x2 saturate
+8c164960:  pref @r4
+8c164962:  mov.l r8,@-r15
+8c164964:  mov.l r9,@-r15
+8c164966:  mov.l r10,@-r15
+8c164968:  mov.l r11,@-r15
+8c16496a:  mov.l r12,@-r15
+8c16496c:  fmov fr12,@-r15
+8c16496e:  fmov fr13,@-r15
+8c164970:  fmov fr14,@-r15
+8c164972:  fmov fr15,@-r15
+8c164974:  mova 0x8c164988,r0
+8c164976:  mov r0,r3
+8c164978:  mov #4,r1
+8c16497a:  mov #8,r2
+8c16497c:  fldi0 fr7
+8c16497e:  pref @r5
+8c164980:  mov.l @r7+,r12
+8c164982:  bra 0x8c16498c
+8c164984:  mov r7,r8
+8c164986:  .word 0x0000
+8c164988:  .word 0x0000
+8c16498a:  cmp/eq r0,r15
+8c16498c:  mov r8,r7
+8c16498e:  fmov @r7+,fr12
+8c164990:  fmov @r7+,fr13
+8c164992:  fmov @r7+,fr14
+8c164994:  fmov @r4+,fr4
+8c164996:  mov r5,r0
+8c164998:  fmov @r4+,fr5
+8c16499a:  fmov @r4+,fr6
+8c16499c:  fmov fr4,@r0
+8c16499e:  fsub fr12,fr4
+8c1649a0:  fmov fr5,@(r0,r1)
+8c1649a2:  fsub fr13,fr5
+8c1649a4:  fmov fr6,@(r0,r2)
+8c1649a6:  fsub fr14,fr6
+8c1649a8:  fmov @r4+,fr8
+8c1649aa:  add #32,r0
+8c1649ac:  fmov @r4+,fr9
+8c1649ae:  pref @r0
+8c1649b0:  fmov @r4+,fr10
+8c1649b2:  fldi0 fr11
+8c1649b4:  fmov @r7+,fr12
+8c1649b6:  fmov @r7+,fr13
+8c1649b8:  fipr fv8,fv4
+8c1649ba:  fmov @r7+,fr14
+8c1649bc:  fmov @r7+,fr1
+8c1649be:  fmov @r7+,fr2
+8c1649c0:  fmov fr7,fr0
+8c1649c2:  fipr fv12,fv8
+8c1649c4:  fmul fr2,fr0
+8c1649c6:  fmac fr0,fr8,fr4
+8c1649c8:  fmac fr0,fr9,fr5
+8c1649ca:  fmac fr0,fr10,fr6
+8c1649cc:  fldi0 fr7
+8c1649ce:  fipr fv4,fv4
+8c1649d0:  fadd fr1,fr11
+8c1649d2:  fsrra fr7
+8c1649d4:  mov r4,r0
+8c1649d6:  add #8,r0
+8c1649d8:  pref @r0
+8c1649da:  fmul fr7,fr4
+8c1649dc:  fmul fr7,fr5
+8c1649de:  fmul fr7,fr6
+8c1649e0:  fldi0 fr7
+8c1649e2:  fipr fv8,fv4
+8c1649e4:  fldi1 fr2
+8c1649e6:  fmov @r7+,fr8
+8c1649e8:  fmov @r7+,fr10
+8c1649ea:  fmov @r7,fr9
+8c1649ec:  add #-8,r7
+8c1649ee:  fmul fr4,fr8
+8c1649f0:  fmul fr5,fr9
+8c1649f2:  fmul fr6,fr10
+8c1649f4:  fmov @r7+,fr1
+8c1649f6:  fmov @r7,fr15
+8c1649f8:  add #8,r7
+8c1649fa:  fabs fr7
+8c1649fc:  fsub fr7,fr2
+8c1649fe:  fldi0 fr7
+8c164a00:  fipr fv12,fv4
+8c164a02:  fldi0 fr0
+8c164a04:  fmul fr2,fr2
+8c164a06:  fmov @r7+,fr3
+8c164a08:  fadd fr10,fr8
+8c164a0a:  fmov fr15,fr10
+8c164a0c:  fmul fr6,fr1
+8c164a0e:  fneg fr10
+8c164a10:  fcmp/gt fr0,fr7
+8c164a12:  fmul fr3,fr2
+8c164a14:  fmov @r7+,fr3
+8c164a16:  fmov @r3,fr15
+8c164a18:  fmul fr4,fr10
+8c164a1a:  bt.s 0x8c164a20
+8c164a1c:  fadd fr3,fr2
+8c164a1e:  fldi0 fr7
+8c164a20:  fadd fr1,fr10
+8c164a22:  fmov fr2,fr3
+8c164a24:  fmul fr15,fr3
+8c164a26:  fldi1 fr0
+8c164a28:  fmul fr7,fr7
+8c164a2a:  fsub fr3,fr0
+8c164a2c:  fmul fr7,fr7
+8c164a2e:  fmul fr0,fr11
+8c164a30:  fmov fr7,fr1
+8c164a32:  fmul fr1,fr1
+8c164a34:  fmul fr1,fr1
+8c164a36:  fmul fr15,fr10
+8c164a38:  fmov @r7+,fr0
+8c164a3a:  fmul fr0,fr8
+8c164a3c:  fmov @r7+,fr0
+8c164a3e:  fmov fr10,fr9
+8c164a40:  fadd fr0,fr8
+8c164a42:  fadd fr15,fr9
+8c164a44:  fmov fr2,fr3
+8c164a46:  fmov fr7,fr0
+8c164a48:  fmov fr11,fr2
+8c164a4a:  fldi0 fr4
+8c164a4c:  fcmp/gt fr4,fr2
+8c164a4e:  bt 0x8c164a52
+8c164a50:  fldi0 fr2
+8c164a52:  ftrv xmtrx,fv0
+8c164a54:  ftrc fr1,fpul
+8c164a56:  mov.l 0x8c164abc,r9 ! 808080
+8c164a58:  sts fpul,r10
+8c164a5a:  ftrc fr2,fpul
+8c164a5c:  shll16 r10
+8c164a5e:  sts fpul,r11
+8c164a60:  shll8 r11
+8c164a62:  or r11,r10
+8c164a64:  ftrc fr3,fpul
+8c164a66:  sts fpul,r11
+8c164a68:  or r11,r10
+8c164a6a:  and r10,r9
+8c164a6c:  mov r9,r11
+8c164a6e:  shll r11
+8c164a70:  shlr8 r11
+8c164a72:  sub r11,r9
+8c164a74:  or r9,r10
+8c164a76:  add r10,r10
+8c164a78:  ftrc fr0,fpul
+8c164a7a:  add #8,r4
+8c164a7c:  add #12,r5
+8c164a7e:  sts fpul,r11
+8c164a80:  mul.l r12,r11
+8c164a82:  dt r6
+8c164a84:  sts macl,r9
+8c164a86:  mov.l r9,@r5
+8c164a88:  add #4,r5
+8c164a8a:  mov.l r10,@r5
+8c164a8c:  add #4,r5
+8c164a8e:  fmov fr8,@r5
+8c164a90:  add #4,r5
+8c164a92:  fmov fr9,@r5
+8c164a94:  bt.s 0x8c164a9c
+8c164a96:  add #4,r5
+8c164a98:  bra 0x8c16498c
+8c164a9a:  nop
+8c164a9c:  fmov @r15+,fr15
+8c164a9e:  fmov @r15+,fr14
+8c164aa0:  fmov @r15+,fr13
+8c164aa2:  fmov @r15+,fr12
+8c164aa4:  mov.l @r15+,r12
+8c164aa6:  mov.l @r15+,r11
+8c164aa8:  mov.l @r15+,r10
+8c164aaa:  mov.l @r15+,r9
+8c164aac:  mov.l @r15+,r8
+8c164aae:  rts
+8c164ab0:  nop
+8c164ab2:  .word 0x0000
+8c164ab4:  .word 0xffff
+8c164ab6:  .word 0xffff
+8c164ab8:  add #-120,r7
+8c164aba:  mov.l r6,@(r0,r0)
+8c164abc:  mov.b r0,@(0,r8)
+8c164abe:  .word 0x0080
