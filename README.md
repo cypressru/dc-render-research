@@ -16,6 +16,61 @@ renderers (KallistiOS, sh4zam).
 Shenmue II and Dead or Alive 2 share one renderer, Sega AM2's "NAOMI library"
 (NL 0.8 / 0.9): their main kernels are instruction-for-instruction identical.
 
+## Interesting discoveries
+
+- **Two games, one renderer.** Shenmue II and Dead or Alive 2 both draw
+  through Sega AM2's "NAOMI library". Their bulk vertex kernels are the same
+  151 instructions, and the clip kernel matches 431 of 431
+  ([DOA2](doa2/README.md)).
+- **The command word is a memory address.** In that library each vertex's
+  PCW is the store-queue address of the previous vertex: any address in
+  `0xE0000000-0xE3FFFFFF` reads as a valid "vertex" command. End of strip is
+  one `shar` of it (`0xE0...` becomes `0xF0...`). It saves registers, not
+  cycles ([Shenmue II](shenmue2/README.md)).
+- **Hiding the divide.** The AM2 kernel handles two vertices per loop trip, so
+  each FDIV's result isn't read until about 20 instructions later. Le Mans and
+  Soulcalibur use it right away and stall an estimated 8-9 cycles per vertex
+  ([Shenmue II](shenmue2/README.md)).
+- **A vertex index hidden in a bone weight.** Soulcalibur stores each skinned
+  vertex as `{w*x, w*y, w*z, w}` per bone and keeps the destination index in
+  the low 12 mantissa bits of the weight `w`, an error of at most about
+  1/2048. The same loop has a `movca.l` cache trick that never fires: its
+  alignment test checks the address 12 bytes into the entry
+  ([Soulcalibur](soulcalibur/README.md)).
+- **Four coloured lights in two instructions.** Soulcalibur loads four light
+  directions into the matrix (one FTRV gives all four N.L), then four light
+  colours (a second FTRV sums the RGB) ([Soulcalibur](soulcalibur/README.md)).
+- **60 fps by patching its own code.** When a frame won't fit, Dead or Alive 2
+  overwrites 11 draw entry points with `rts; nop`, runs one logic tick
+  without drawing, then restores them. Logic stays at 60 Hz
+  ([DOA2](doa2/README.md)).
+- **A crowd sized by the clock.** Shenmue II recomputes how many NPCs to draw
+  every frame from their measured draw cost against a 32 ms budget, fading the
+  rest out ([Shenmue II](shenmue2/README.md)).
+- **Shenmue II doesn't stream its town.** A district is one resident pack; the
+  big `STREAM/*.AFS` files are ADX voice audio (24,803 "free talk" clips in
+  `FREE01.AFS` alone) ([Shenmue II](shenmue2/README.md)).
+- **Le Mans' "5 million polygons per second".** The binary gives no support
+  for it. The whole track is about 54k triangles across four layers (plus
+  about 18k in instanced props). Speed comes from a 30-instruction prelit
+  kernel, distance layers (far-plane x 1.0 / 0.55 / 0.23) and a fixed
+  37,000-strip-vertex budget ([Le Mans](test-drive-le-mans/README.md)).
+- **pow(x, 16) on the integer pipe.** Le Mans computes specular by shifting
+  the float's bit pattern left by 4 and adding the bits of 65536.0f
+  ([Le Mans](test-drive-le-mans/README.md)).
+- **Two colour channels per multiply.** Le Mans' clip path lerps packed ARGB
+  as R|B and G in two registers with 8.8 fixed point: four `mul.l` for all
+  channels. It masks alpha out, so clipped vertices get A = 0
+  ([Le Mans](test-drive-le-mans/README.md)).
+- **On-chip RAM only in WSB.** None of the four disassembled games enables
+  the operand-cache RAM (OCRAM) or index mode; the only cache-level trick
+  among them is Soulcalibur's `movca.l` line allocation for its vertex pools. WSB 2K2's source
+  does: `__VCCPU_SplitCache` sets ORA and OIX and keeps the vertex pool and
+  material table in on-chip RAM ([WSB 2K2](wsb2k2/README.md)).
+- **Switched-off code in the WSB source.** In this revision of the WSB 2K2
+  renderer (CVS 1.88 / 1.34), the batched bounding-box cull, the NOP-padded store-queue emitter and bump
+  mapping are all compiled out (`#if 0`) ([WSB 2K2](wsb2k2/README.md)).
+
 Each game folder has a `README.md` with findings and a `listings/` folder
 with annotated disassembly of the important routines.
 
